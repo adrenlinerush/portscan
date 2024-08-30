@@ -7,7 +7,7 @@ from compare import compare
 
 app = Flask(__name__)
 
-@app.route('/health')
+@app.route('/health', methods=['GET'])
 def getIndexHtml():
     status = {'status': 'online'}
     return jsonify(status)

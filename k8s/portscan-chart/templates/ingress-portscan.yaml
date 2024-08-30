@@ -1,0 +1,36 @@
+{{- if .Values.portscan.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portscan-ingress
+  annotations:
+    {{- range $key, $value := .Values.portscan.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    {{- range .Values.portscan.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: portscan
+                port:
+                  number: {{ $.Values.portscan.service.port }}
+          {{- end }}
+    {{- end }}
+  {{- if .Values.portscan.ingress.tls }}
+  tls:
+    {{- range .Values.portscan.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+{{- end }}

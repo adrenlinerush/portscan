@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portscan
+spec:
+  replicas: {{ .Values.portscan.replicas }}
+  selector:
+    matchLabels:
+      app: portscan
+  template:
+    metadata:
+      labels:
+        app: portscan
+    spec:
+      containers:
+        - name: portscan
+          image: {{ .Values.portscan.image }}
+          imagePullPolicy: {{ .Values.portscan.imagePullPolicy }}
+          env:
+            - name: DB_USERNAME
+              value: {{ .Values.portscan.env.DB_USERNAME }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-root-password
+            - name: DB_DATABASE
+              value: {{ .Values.portscan.env.DB_DATABASE }}
+            - name: DB_HOST
+              value: "mysql"
+      restartPolicy: Always

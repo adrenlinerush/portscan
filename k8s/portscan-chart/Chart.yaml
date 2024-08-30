@@ -1,0 +1,4 @@
+apiVersion: v2
+name: portscan-chart
+description: A Helm chart to deploy the portscan application and MySQL
+version: 0.1.0

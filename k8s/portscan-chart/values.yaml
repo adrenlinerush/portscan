@@ -1,0 +1,32 @@
+portscan:
+  image: "localhost:5000/portscan"
+  imagePullPolicy: Always
+  replicas: 1
+  env:
+    DB_USERNAME: "root"
+    DB_DATABASE: "portscan"
+  service:
+    type: ClusterIP
+    port: 4000
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+      - host: portscan.local
+        paths:
+          - /
+    tls: []
+
+mysql:
+  image: "mysql:8.0"
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 3306
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 8Gi
