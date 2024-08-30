@@ -1,0 +1,8 @@
+create database  IF NOT EXISTS portscan;
+use portscan;
+create table  IF NOT EXISTS portscan(
+    scan_dt timestamp default CURRENT_TIMESTAMP,
+    scan_id varchar(255),
+    ip char(15),
+    open_ports text
+);

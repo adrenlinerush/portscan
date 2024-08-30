@@ -1,0 +1,22 @@
+services:
+  devcontainer:
+    build: .
+    command: sleep infinity
+    networks:
+      - portscan
+    ports:
+      - 4000:4000
+    volumes:
+      - ..:/workspace:cached
+  db:
+    image: mysql:latest
+    networks:
+      - portscan
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+
+networks:
+  portscan:
+    driver: bridge
