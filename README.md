@@ -1,6 +1,6 @@
 # Portscan
 
-**Description:** An API that scans for open ports on a set of IP addresses. Results returned in json. Results persist and are stored in database for later retreival by ip or scan_id.  Also, two scans may be compared via api.  API itself is stateless.
+**Description:** An API that scans for open ports on a set of IP addresses. Results returned in json. Results persist and are stored in database for later retreival by ip or scan_id.  Also, two scans may be compared via API.  API itself is stateless.
 
 **Development:(VS Code with Docker)**
 
@@ -15,6 +15,7 @@
 **src/ports2scan** contains ports to be scanned
 
 **Tests:** Run ```pytest``` from the src directory within venv.
+![pytest](./img/pytest.png)
 
 ## Kubernetes Deployment:
 
@@ -32,8 +33,8 @@
 
 * Code was cranked out quickly using tools that was most comfortable with.
 * Given more time would probably have used other database and potentially api framework.
-* Also, would optimize code for speed.  Example: not goto to database after scan to retreive scan results for return.
+* Also, would optimize code for speed.  Example: not read from database after scan to retreive scan results for return.
 * Database uses root user instead of user with only permissions required for application.
-* Database probably wouldn't be in a container but an managed cloud service.
+* Database wouldn't be in a container but an managed cloud service.
 * There is no authentication on the api.
 * The application is running without encryption.
