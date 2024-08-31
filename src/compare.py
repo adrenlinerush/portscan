@@ -52,10 +52,12 @@ def run_scan():
     """
     try:
         scan_id_1 = request.args.get('scan_id_1')
+        if not scan_id_1: raise Exception
         scan_id_2 = request.args.get('scan_id_2')
+        if not scan_id_2: raise Exception
     except:
         payload_error = {'ERROR': 'Payload was invalid.'}
-        return jsonify(payload_error)
+        return jsonify(payload_error), 400
 
 
     rslt1 = utils.retreive_scan_results(scan_id=scan_id_1)
