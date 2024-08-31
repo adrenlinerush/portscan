@@ -10,16 +10,17 @@
 * API should be available at localhost:4000
 
 **Usage:** Refer to swagger documentation: http://localhost:4000/apidocs
+![Swagger](./img/swagger.png)
 
 **src/ports2scan** contains ports to be scanned
 
 **Tests:** Run ```pytest``` from the src directory.
 
-#### Kubernetes Deployment:
+## Kubernetes Deployment:
 
 **Local Environment:**
 
-* ```make setup_dev_kubernetes``` to setup local k3s environment and install helm
+* ```make setup_dev_kubernetes``` to setup local k3s environment and install helm (Debian)
 * Potentially could fail to add ```127.0.0.1 portscan.local``` to /etc/hosts
 * ```make registry``` to start local registry in docker.
 * ```make build``` to build the container and push to registry.
@@ -27,7 +28,7 @@
 * ```make destroy``` to remove deployment.
 * Swagger: http://portscan.local/apidocs
 
-#### Corners Cut:
+## Corners Cut:
 
 * Code was cranked out quickly using tools that was most comfortable with.
 * Given more time would probably have used other database and potentially api framework.
