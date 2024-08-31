@@ -13,6 +13,7 @@ scan = Blueprint('scan', __name__)
             'name': 'body',
             'in': 'body',
             'required': True,
+            'description': 'A list of ip addresses to scan.',
             'schema': {
                 'type': 'object',
                 'properties': {
@@ -74,6 +75,7 @@ def run_scan():
     'tags': ['Scan'],
     'parameters': [
         {
+            'description': 'The id of the scan to receive.',
             'name': 'scan_id',
             'in': 'query',
             'required': True,
@@ -123,6 +125,7 @@ def get_scan_by_id():
     'parameters': [
         {
             'name': 'ip',
+            'description': 'The ip of the scan to receive.',
             'in': 'query',
             'required': True,
             'schema': {

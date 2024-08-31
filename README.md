@@ -15,6 +15,8 @@
 
 **.env** contains environment variable for databse connection in devcontainer
 
+**Tests:** Run ```pytest``` from the src directory.
+
 #### Kubernetes Deployment:
 
 **Local Environment:**
@@ -33,7 +35,6 @@
 
 * Code is not optimized. One example is that /scan writes to the db and then uses the same function as /scan/scan_id to query the db to retrieve it instead of using data in memory.  This was done for speed of development.
 * No thought was put into whether functionality should be put into separate class/module for reuseability.
-* There is no unit testing. I tried to break everything down to very simple functions to limit potential for error but only simple curl spot testing was done.
 * I did not put much thought into language, framework, or data storage.  Is flask the best option out there and would a nosql database have been better?  Would a redis cache met the requirements?
 * Very little error handling and input validation done.
 * Database uses root user instead of user with only permissions required for application.
@@ -41,5 +42,3 @@
 * There is no authentication on the api.
 * The application is running without encryption.
 * Makefile is very simple and rudimentary.
-* No CI/CD for deployment.
-* Devcontainer could use a little tweaking for specific project.

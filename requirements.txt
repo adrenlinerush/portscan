@@ -1,5 +1,6 @@
 mysql-connector-python
 flask
 flasgger
-
+pytest
+pytest-mock
 
