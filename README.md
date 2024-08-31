@@ -1,6 +1,6 @@
 # Portscan
 
-**Description:** An API that scans for open ports on a set of IP addresses. Results returned in json. Results persist and are stored in database for later retreival by ip or scan_id.  Also, two scans may be compared via API.  API itself is stateless.
+**Description:** An API that scans for open ports on a set of IP addresses. Results returned in json. Results persist and are stored in database for later retreival by ip or scan_id.  Also, two scans may be compared via API.
 
 **Development:(VS Code with Docker)**
 
@@ -14,7 +14,7 @@
 
 **src/ports2scan** contains ports to be scanned
 
-**Tests:** Run ```pytest``` from the src directory within venv.
+**Tests:** Run ```pytest``` from the src directory.  When openning a terminal in VS Code it should already be in a venv with requirements installed from within the devcontainer.
 ![pytest](./img/pytest.png)
 
 ## Kubernetes Deployment:
@@ -32,9 +32,10 @@
 ## Corners Cut:
 
 * Code was cranked out quickly using tools that was most comfortable with.
-* Given more time would probably have used other database and potentially api framework.
-* Also, would optimize code for speed.  Example: not read from database after scan to retreive scan results for return.
-* Database uses root user instead of user with only permissions required for application.
-* Database wouldn't be in a container but an managed cloud service.
-* There is no authentication on the api.
-* The application is running without encryption.
+* Given more time would have used a nosql database or even a redis cache depending on retention requirements.
+* Also, would optimize code for speed.  Example: I would not read from database after scan to retreive scan results for return.  This however reduces and simplifies the code.
+* API uses database root user instead of user with only permissions required for application.
+* In production the database wouldn't be in a container but an managed cloud service such as Elasticache or DyanmoDB.
+* There is no authentication on the api.  Generally, this would be SAML or OAUTH unless isolated access in other ways.
+* The application is running without encryption.  In production it would have a valid certificate and run under HTTPS.
+* Given a production environment a CI/CD pipeline would have been created along with changes to the helm chart to accomodate.
