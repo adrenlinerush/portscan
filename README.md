@@ -29,13 +29,9 @@
 * ```make destroy``` to remove deployment.
 * Swagger: http://portscan.local/apidocs
 
-## Corners Cut:
+## Things I may have changed or have done diffently...
 
-* Code was cranked out quickly using tools that was most comfortable with.
-* Given more time would have used a nosql database or even a redis cache depending on retention requirements.
-* Also, would optimize code for speed.  Example: I would not read from database after scan to retreive scan results for return.  This however reduces and simplifies the code.
-* API uses database root user instead of user with only permissions required for application.
-* In production the database wouldn't be in a container but an managed cloud service such as Elasticache or DyanmoDB.
-* There is no authentication on the api.  Generally, this would be SAML or OAUTH unless isolated access in other ways.
-* The application is running without encryption.  In production it would have a valid certificate and run under HTTPS.
-* Given a production environment a CI/CD pipeline would have been created along with changes to the helm chart to accomodate.
+* Considered other backends such as nosql, redis or opensearch.
+* Optimize code for speed.
+* Create database user with only permissions required for application.
+* Add authentication such as saml or oauth to API.
