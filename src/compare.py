@@ -47,6 +47,9 @@ compare = Blueprint('compare', __name__)
     }
 })
 def run_scan():
+    """
+    Endpoint to compare results from two scans.
+    """
     try:
         scan_id_1 = request.args.get('scan_id_1')
         scan_id_2 = request.args.get('scan_id_2')

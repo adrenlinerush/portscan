@@ -19,4 +19,4 @@ chown -R www-data:www-data /workspace/src
 
 source /workspace/.env
 echo "Starting uwsgi server..."
-uwsgi --ini portscan.ini
+uwsgi --ini portscan.ini --py-autoreload 1

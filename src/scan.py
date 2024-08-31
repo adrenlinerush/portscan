@@ -52,6 +52,9 @@ scan = Blueprint('scan', __name__)
     }
 })
 def run_scan():
+    """
+    Endpoint to initiate a scan.
+    """
     try:
         body = request.json
         ip_list = body['ip_list']
@@ -108,6 +111,9 @@ def run_scan():
     }
 })
 def get_scan_by_id():
+    """
+    Endpoint to retreive results from a single scan by id.
+    """
     try:
         scan_id = request.args.get('scan_id')
     except:
@@ -157,6 +163,9 @@ def get_scan_by_id():
     }
 })
 def get_scan_by_ip():
+    """
+    Endpoint to retreive results from all scans on a specific ip.
+    """
     try:
         ip = request.args.get('ip')
     except:
