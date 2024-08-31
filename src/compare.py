@@ -1,14 +1,55 @@
 from flask import Blueprint, request, jsonify
+from flasgger import swag_from
 import utils
 
 compare = Blueprint('compare', __name__)
 
 @compare.route('/compare', methods=['GET'])
+@swag_from({
+    'tags': ['Compare'],
+    'parameters': [
+        {
+            'name': 'scan_id_1',
+            'in': 'query',
+            'type': 'string',
+            'required': True,
+            'description': 'The first scan ID to compare'
+        },
+        {
+            'name': 'scan_id_2',
+            'in': 'query',
+            'type': 'string',
+            'required': True,
+            'description': 'The second scan ID to compare'
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Comparison results of the two scans',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'common_ips': {'type': 'array'},
+                    'scan_id_1': {'type': 'array'},
+                    'scan_id_2': {'type': 'array'}
+                }
+            }
+        },
+        400: {
+            'description': 'Payload error or Scan ID not found',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'ERROR': {'type': 'string'}
+                }
+            }
+        }
+    }
+})
 def run_scan():
     try:
-        body = request.json
-        scan_id_1 = body['scan_id_1']
-        scan_id_2 = body['scan_id_2']
+        scan_id_1 = request.args.get('scan_id_1')
+        scan_id_2 = request.args.get('scan_id_2')
     except:
         payload_error = {'ERROR': 'Payload was invalid.'}
         return jsonify(payload_error)
@@ -19,11 +60,11 @@ def run_scan():
 
     if not rslt1 or len(rslt1) < 1:
         id_error = {'ERROR': scan_id_1 + ' was not found.'}
-        return jsonify(id_error)
+        return jsonify(id_error), 400
 
     if not rslt2 or len(rslt2) < 1:
         id_error = {'ERROR': scan_id_2 + ' was not found.'}
-        return jsonify(id_error)
+        return jsonify(id_error), 400
 
     compare_results = {}
     matching_ips = utils.get_matching_ips(rslt1, rslt2)
