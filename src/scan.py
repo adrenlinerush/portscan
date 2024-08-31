@@ -116,6 +116,7 @@ def get_scan_by_id():
     """
     try:
         scan_id = request.args.get('scan_id')
+        if not scan_id: raise Exception
     except:
         payload_error = {'ERROR': 'Payload was invalid.'}
         return jsonify(payload_error), 400
@@ -168,6 +169,7 @@ def get_scan_by_ip():
     """
     try:
         ip = request.args.get('ip')
+        if not ip: raise Exception
     except:
         payload_error = {'ERROR': 'Payload was invalid.'}
         return jsonify(payload_error), 400

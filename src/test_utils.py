@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import mock_open
 from utils import *
-import socket
 from contextlib import closing
 
 

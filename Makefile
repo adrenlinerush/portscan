@@ -10,6 +10,7 @@ setup_dev_kubernetes:
 
 registry:
 	docker run -d -p 5000:5000 --restart=always --name registry registry:2
+	docker ps
 
 build:
 	docker build . --tag localhost:5000/portscan
@@ -22,3 +23,4 @@ deploy:
 destroy:
 	sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm uninstall portscan
 	sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get pods
+

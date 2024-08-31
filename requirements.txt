@@ -3,4 +3,5 @@ flask
 flasgger
 pytest
 pytest-mock
+pytest-flask
 
