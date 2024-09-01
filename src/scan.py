@@ -70,7 +70,10 @@ def run_scan():
             return jsonify(ip_error), 400
         open_ports = utils.run_scan(scan_ip)
         utils.store_scan_results(scan_ip, scan_id, open_ports)
-    results = utils.retreive_scan_results(scan_id=scan_id)
+    # appears to be a delay in the time from results being written to being available in opensearch ugly hack to fix later
+    results = []
+    while results == []:
+        results = utils.retrieve_scan_results(scan_id=scan_id)
     return jsonify(results)
 
 @scan.route('/scan/scan_id', methods=['GET'])
@@ -120,7 +123,7 @@ def get_scan_by_id():
     except:
         payload_error = {'ERROR': 'Payload was invalid.'}
         return jsonify(payload_error), 400
-    scans = utils.retreive_scan_results(scan_id=scan_id)
+    scans = utils.retrieve_scan_results(scan_id=scan_id)
     if not scans or len(scans) < 1:
         id_error = {'ERROR': scan_id + ' was not found.'}
         return jsonify(id_error), 400
@@ -165,7 +168,7 @@ def get_scan_by_id():
 })
 def get_scan_by_ip():
     """
-    Endpoint to retreive results from all scans on a specific ip.
+    Endpoint to retrieve results from all scans on a specific ip.
     """
     try:
         ip = request.args.get('ip')
@@ -178,5 +181,5 @@ def get_scan_by_ip():
     except ValueError:
         ip_error = {'ERROR': ip + ' is not a valid IP address.'}
         return jsonify(ip_error), 400
-    scans = utils.retreive_scan_results(ip=ip)
+    scans = utils.retrieve_scan_results(ip=ip)
     return jsonify(scans)

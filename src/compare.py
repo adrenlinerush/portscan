@@ -60,8 +60,8 @@ def run_scan():
         return jsonify(payload_error), 400
 
 
-    rslt1 = utils.retreive_scan_results(scan_id=scan_id_1)
-    rslt2 = utils.retreive_scan_results(scan_id=scan_id_2)
+    rslt1 = utils.retrieve_scan_results(scan_id=scan_id_1)
+    rslt2 = utils.retrieve_scan_results(scan_id=scan_id_2)
 
     if not rslt1 or len(rslt1) < 1:
         id_error = {'ERROR': scan_id_1 + ' was not found.'}

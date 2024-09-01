@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def mock_utils(mocker):
-    mocker.patch('utils.retreive_scan_results')
+    mocker.patch('utils.retrieve_scan_results')
     mocker.patch('utils.get_matching_ips', return_value=['192.168.1.1'])
     mocker.patch('utils.get_ips_only_in', side_effect=[['192.168.1.2'], ['192.168.1.3']])
     mocker.patch('utils.get_open_ports_ip_list', side_effect=[
@@ -23,7 +23,7 @@ def mock_utils(mocker):
     mocker.patch('utils.get_ports_only_in', side_effect=[['22'], ['443']])
 
 def test_compare_success(client, mock_utils, mocker):
-    mocker.patch('utils.retreive_scan_results', return_value=[
+    mocker.patch('utils.retrieve_scan_results', return_value=[
         [{"ip": "192.168.1.1", "open_ports": "22,80"}, {"ip": "192.168.1.2", "open_ports": "22,80"}],
         [{"ip": "192.168.1.1", "open_ports": "80"}, {"ip": "192.168.1.3", "open_ports": "443"}]
     ])
@@ -41,8 +41,8 @@ def test_compare_invalid_payload(client):
     assert response.get_json() == {'ERROR': 'Payload was invalid.'}
 
 def test_compare_scan_id_1_not_found(client, mock_utils, mocker):
-    mock_retreive_scan_results = mocker.patch('utils.retreive_scan_results')
-    mock_retreive_scan_results.side_effect = [
+    mock_retrieve_scan_results = mocker.patch('utils.retrieve_scan_results')
+    mock_retrieve_scan_results.side_effect = [
         [],
         [{"ip": "192.168.1.1", "open_ports": "80"}]
     ]
@@ -52,8 +52,8 @@ def test_compare_scan_id_1_not_found(client, mock_utils, mocker):
     assert response.get_json() == {'ERROR': 'invalid_scan1 was not found.'}
 
 def test_compare_scan_id_2_not_found(client, mock_utils, mocker):
-    mock_retreive_scan_results = mocker.patch('utils.retreive_scan_results')
-    mock_retreive_scan_results.side_effect = [
+    mock_retrieve_scan_results = mocker.patch('utils.retrieve_scan_results')
+    mock_retrieve_scan_results.side_effect = [
         [{"ip": "192.168.1.1", "open_ports": "22,80"}],
         []
     ]

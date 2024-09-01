@@ -1,8 +1,93 @@
 import pytest
 from unittest.mock import mock_open
 from utils import *
-from contextlib import closing
 
+def test_store_scan_results(mocker):
+    mock_os_client = mocker.patch('utils.get_os').return_value
+    mock_index = mock_os_client.index
+    result = store_scan_results('127.0.0.1', 'scan123', ['22', '80'])
+    expected_document = {
+        'ip': '127.0.0.1',
+        'scan': 'scan123',
+        'open_ports': '22,80',
+    }
+    # I don't care if timestamp matches.
+    actual_document = mock_index.call_args[1]['body']
+    actual_document.pop('timestamp', None)
+
+    mock_index.assert_called_once_with(index='portscan', body=expected_document)
+    assert result == mock_index.return_value.get("result", "error")
+
+
+@pytest.mark.parametrize('ip,expected', [
+    ('scan123', [{'timestamp': '2024-08-30T12:34:56Z', 'ip': '127.0.0.1', 'open_ports': '22,80', 'scan_id': 'scan123'}]),
+])
+def test_retrieve_scan_results_by_ip(mocker, ip, expected):
+    mock_os_client = mocker.patch('utils.get_os').return_value
+    mock_search = mock_os_client.search
+    mock_search.return_value = {
+        "hits": {
+            "hits": [
+                {
+                    "_id": "1",
+                    "_source": {
+                        "timestamp": "2024-08-30T12:34:56Z",
+                        "ip": "127.0.0.1",
+                        "open_ports": "22,80",
+                        "scan": "scan123"
+                    }
+                }
+            ]
+        }
+    }
+    results = retrieve_scan_results(ip=ip)
+    mock_search.assert_called_once_with(
+        index="portscan",
+        body={
+            "query": {
+                "bool": {
+                    "must": [{"match": {"ip": ip}}]
+                }
+            }
+        }
+    )
+    assert results == expected
+
+
+@pytest.mark.parametrize('scan_id,expected', [
+    ('scan123', [{'timestamp': '2024-08-30T12:34:56Z', 'ip': '127.0.0.1', 'open_ports': '22,80', 'scan_id': 'scan123'}]),
+])
+def test_retrieve_scan_results_by_scan_id(mocker, scan_id, expected):
+    mock_os_client = mocker.patch('utils.get_os').return_value
+    mock_search = mock_os_client.search
+    mock_search.return_value = {
+        "hits": {
+            "hits": [
+                {
+                    "_id": "1",
+                    "_source": {
+                        "timestamp": "2024-08-30T12:34:56Z",
+                        "ip": "127.0.0.1",
+                        "open_ports": "22,80",
+                        "scan": "scan123"
+                    }
+                }
+            ]
+        }
+    }
+
+    results = retrieve_scan_results(scan_id=scan_id)
+    mock_search.assert_called_once_with(
+        index="portscan",
+        body={
+            "query": {
+                "bool": {
+                    "must": [{"match": {"scan": scan_id}}]
+                }
+            }
+        }
+    )
+    assert results == expected
 
 def test_get_ports_to_scan(mocker):
     mocker.patch('builtins.open', mock_open(read_data="22\n80\n443\n"))
@@ -25,48 +110,6 @@ def test_run_scan(mocker):
     assert open_ports == ['22']
     mock_get_ports_to_scan.assert_called_once()
     assert mock_socket.call_count is 2
-
-
-def test_store_scan_results(mocker):
-    mock_db = mocker.patch('utils.get_db').return_value
-    mock_cursor = mock_db.cursor.return_value
-
-    result = store_scan_results('127.0.0.1', 'scan123', ['22', '80'])
-
-    mock_db.cursor.assert_called_once()
-    mock_cursor.execute.assert_called_once_with(
-        "insert into portscan (ip, scan_id, open_ports) Values(%s, %s, %s)",
-        ['127.0.0.1', 'scan123', '22,80']
-    )
-    mock_db.commit.assert_called_once()
-    assert result == 0
-
-
-@pytest.mark.parametrize('ip,expected', [
-    ('127.0.0.1', [{'timestamp': '2024-08-30 12:34:56', 'id': 'scan123', 'ip': '127.0.0.1', 'open_ports': '22,80'}]),
-])
-def test_retreive_scan_results_by_ip(mocker, ip, expected):
-    mock_db = mocker.patch('utils.get_db').return_value
-    mock_cursor = mock_db.cursor.return_value
-    mock_cursor.fetchall.return_value = [('2024-08-30 12:34:56', 'scan123', '127.0.0.1', '22,80')]
-
-    results = retreive_scan_results(ip=ip)
-    assert results == expected
-    mock_cursor.execute.assert_called_once_with("select * from portscan where ip = %s", [ip])
-
-
-@pytest.mark.parametrize('scan_id,expected', [
-    ('scan123', [{'timestamp': '2024-08-30 12:34:56', 'id': 'scan123', 'ip': '127.0.0.1', 'open_ports': '22,80'}]),
-])
-def test_retreive_scan_results_by_scan_id(mocker, scan_id, expected):
-    mock_db = mocker.patch('utils.get_db').return_value
-    mock_cursor = mock_db.cursor.return_value
-    mock_cursor.fetchall.return_value = [('2024-08-30 12:34:56', 'scan123', '127.0.0.1', '22,80')]
-
-    results = retreive_scan_results(scan_id=scan_id)
-    assert results == expected
-    mock_cursor.execute.assert_called_once_with("select * from portscan where scan_id = %s", [scan_id])
-
 
 def test_get_matching_ips():
     scan_1 = [{'ip': '192.168.1.1'}, {'ip': '192.168.1.2'}]

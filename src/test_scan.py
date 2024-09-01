@@ -1,6 +1,6 @@
 import pytest
 from flask import Flask, jsonify
-from utils import get_scan_id, run_scan, store_scan_results, retreive_scan_results
+from utils import get_scan_id, run_scan, store_scan_results, retrieve_scan_results
 
 @pytest.fixture
 def client():
@@ -16,7 +16,7 @@ def mock_utils(mocker):
     mocker.patch('utils.get_scan_id', return_value="mock_scan_id")
     mocker.patch('utils.run_scan', return_value=["22", "80"])
     mocker.patch('utils.store_scan_results')
-    mocker.patch('utils.retreive_scan_results', return_value=[
+    mocker.patch('utils.retrieve_scan_results', return_value=[
         {"timestamp": "2024-08-30 12:34:56", "id": "mock_scan_id", "ip": "127.0.0.1", "open_ports": "22,80"}
     ])
 
@@ -49,7 +49,7 @@ def test_get_scan_by_id_invalid_payload(client):
     assert response.get_json() == {'ERROR': 'Payload was invalid.'}
 
 def test_get_scan_by_id_not_found(client, mocker):
-    mocker.patch('utils.retreive_scan_results', return_value=[])
+    mocker.patch('utils.retrieve_scan_results', return_value=[])
     response = client.get('/scan/scan_id', query_string={"scan_id": "non_existent_id"})
     assert response.status_code == 400
     assert response.get_json() == {'ERROR': 'non_existent_id was not found.'}

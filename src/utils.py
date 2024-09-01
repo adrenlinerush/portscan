@@ -2,16 +2,58 @@ import uuid
 import socket
 from os import environ
 from contextlib import closing
-import mysql.connector
+from opensearchpy import OpenSearch
+from datetime import datetime, timezone
 
-def get_db():
-    db = mysql.connector.connect(
-        host = environ['DB_HOST'],
-        username = environ['DB_USERNAME'],
-        password = environ['DB_PASSWORD'],
-        database = environ['DB_DATABASE']
+def get_os():
+    os_client = OpenSearch(
+        hosts = [{'host':environ['OS_HOST'],'port':environ['OS_PORT']}],
+        http_auth = (environ['OS_USER'], environ['OS_PASSWORD']),
+        use_ssl=False
     )
-    return db
+    return os_client
+
+def store_scan_results(ip, scan_id, open_ports):
+    os_client = get_os()
+    document = {
+        "ip": ip,
+        "scan": scan_id,
+        "open_ports": ','.join(open_ports),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+    response = os_client.index(index="portscan", body=document)
+    return response.get("result", "error")
+
+def retrieve_scan_results(ip=None, scan_id=None):
+    os_client = get_os()
+
+    query = {
+        "query": {
+            "bool": {
+                "must": []
+            }
+        }
+    }
+    if ip:
+        query["query"]["bool"]["must"].append({"match": {"ip": ip}})
+    if scan_id:
+        query["query"]["bool"]["must"].append({"match": {"scan": scan_id}})
+
+    response = os_client.search(index="portscan", body=query)
+    scan_results = []
+
+    for hit in response["hits"]["hits"]:
+        source = hit["_source"]
+        result = {
+            "timestamp": source.get("timestamp"),
+            "ip": source.get("ip"),
+            "open_ports": source.get("open_ports"),
+            "scan_id": source.get("scan")
+        }
+        scan_results.append(result)
+
+    return scan_results
 
 def get_ports_to_scan():
     ports = []
@@ -32,30 +74,6 @@ def run_scan(ip):
             if sock.connect_ex((ip, int(port))) == 0:
                 open_ports.append(port)
     return open_ports
-
-def store_scan_results(ip, scan_id, open_ports):
-    db = get_db()
-    csr = db.cursor()
-    sql = "insert into portscan (ip, scan_id, open_ports) Values(%s, %s, %s)"
-    csr.execute(sql,[ip,scan_id,','.join(open_ports)])
-    db.commit()
-
-    return (0)
-
-def retreive_scan_results(ip=None, scan_id=None):
-    db = get_db()
-    csr = db.cursor()
-    scan_results = []
-    if ip:
-        sql = "select * from portscan where ip = %s"
-        csr.execute(sql, [ip])
-    elif scan_id:
-        sql = "select * from portscan where scan_id = %s"
-        csr.execute(sql, [scan_id])
-    for scan in csr.fetchall():
-        result = {"timestamp": scan[0], "id": scan[1], "ip": scan[2], "open_ports": scan[3]}
-        scan_results.append(result)
-    return scan_results
 
 def get_matching_ips(scan_1, scan_2):
     ips1 = []

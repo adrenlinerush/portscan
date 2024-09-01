@@ -1,5 +1,8 @@
+version: "3"
 services:
   devcontainer:
+    depends_on:
+      - opensearch
     build: .
     command: sleep infinity
     networks:
@@ -8,14 +11,24 @@ services:
       - 4000:4000
     volumes:
       - ..:/workspace:cached
-  db:
-    image: mysql:latest
+  opensearch:
+    image: opensearchproject/opensearch:2.9.0
+    container_name: opensearch-node
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - plugins.security.disabled=true
+    ports:
+      - 9200:9200
+      - 9600:9600
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
     networks:
       - portscan
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpwd
+
+volumes:
+  opensearch-data:
 
 networks:
   portscan:
