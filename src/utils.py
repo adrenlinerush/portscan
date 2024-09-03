@@ -8,8 +8,10 @@ from datetime import datetime, timezone
 def get_os():
     os_client = OpenSearch(
         hosts = [{'host':environ['OS_HOST'],'port':environ['OS_PORT']}],
-        http_auth = (environ['OS_USER'], environ['OS_PASSWORD']),
-        use_ssl=False
+        http_auth = ("admin", environ['OS_ADMIN_PASSWORD']),
+        #http_auth = (environ['OS_USER'], environ['OS_PASSWORD']),
+        use_ssl=True,
+        verify_certs=False
     )
     return os_client
 

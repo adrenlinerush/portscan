@@ -12,18 +12,14 @@ services:
     volumes:
       - ..:/workspace:cached
   opensearch:
-    image: opensearchproject/opensearch:2.9.0
+    image: opensearchproject/opensearch:latest
     container_name: opensearch-node
     environment:
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - plugins.security.disabled=true
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=OS2xTempPass1!"
     ports:
       - 9200:9200
       - 9600:9600
-    volumes:
-      - opensearch-data:/usr/share/opensearch/data
     networks:
       - portscan
 

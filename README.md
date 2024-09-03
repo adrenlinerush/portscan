@@ -1,6 +1,6 @@
 # Portscan
 
-**IMPORTANT** Branch is incomplete.  Opensearch is running without security in devcontainer and Makefile and Helm chart are not updated.
+**IMPORTANT** Branch is incomplete.  Opensearch is running in the devcontainer but Makefile and Helm chart are not updated for kubernetes deployment.
 
 **Description:** An API that scans for open ports on a set of IP addresses. Results returned in json. Results persist and are stored in database for later retreival by ip or scan_id.  Also, two scans may be compared via API.
 

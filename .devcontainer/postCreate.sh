@@ -12,32 +12,33 @@ echo "Starting nginx server..."
 /etc/init.d/nginx start
 
 echo "Configuring Opensearch and .env"
-until curl -u admin:admin http://opensearch:9200 -s --insecure; do
+until curl -u "admin:OS2xTempPass1!" https://opensearch:9200 -s --insecure; do
   echo "Waiting for OpenSearch..."
   sleep 5
 done
 
-OS_ADMIN_PASSWORD=$(
-  tr -dc A-Za-z0-9 </dev/urandom | head -c 13
-  echo
-)
-echo "export OS_ADMIN_PASSWORD=\"$OS_ADMIN_PASSWORD\"" >/workspace/.env
+# OS_ADMIN_PASSWORD=$(
+#   tr -dc A-Za-z0-9 </dev/urandom | head -c 13
+#   echo
+# )
+# echo "export OS_ADMIN_PASSWORD=\"$OS_ADMIN_PASSWORD\"" >/workspace/.env
+echo "export OS_ADMIN_PASSWORD=\"OS2xTempPass1!\"" >/workspace/.env
 echo "export OS_HOST=\"opensearch\"" >>/workspace/.env
 echo "export OS_PORT=9200" >>/workspace/.env
-OS_PASSWORD=$(
-  tr -dc A-Za-z0-9 </dev/urandom | head -c 13
-  echo
-)
-echo "export OS_PASSWORD=\"$OS_PASSWORD\"" >>/workspace/.env
-echo "export OS_USER=\"portscan\"" >>/workspace/.env
+# OS_PASSWORD=$(
+#   tr -dc A-Za-z0-9 </dev/urandom | head -c 13
+#   echo
+# )
+# echo "export OS_PASSWORD=\"$OS_PASSWORD\"" >>/workspace/.env
+# echo "export OS_USER=\"portscan\"" >>/workspace/.env
 
-# echo "Setting Admin Password..."
-# curl -X PUT "http://opensearch:9200/_plugins/_security/api/internalusers/admin" -H "Content-Type: application/json" -u 'admin:admin' -d'
+# # echo "Setting Admin Password..."
+# curl -X PUT "https://opensearch:9200/_plugins/_security/api/internalusers/admin" -H "Content-Type: application/json" -u 'admin:OS2xTempPass1!' -d'
 # {
-#   "password": "'"$OS_ADMIN_PASSWORD"'"
+#    "password": "'"$OS_ADMIN_PASSWORD"'"
 # }' --insecure
 
-# echo "Creating portscan role..."
+# # echo "Creating portscan role..."
 # curl -X POST "http://opensearch:9200/_plugins/_security/api/roles/portscan" -H "Content-Type: application/json" -u "admin:$OS_ADMIN_PASSWORD" -d'
 # {
 #   "cluster_permissions": [],
@@ -52,7 +53,7 @@ echo "export OS_USER=\"portscan\"" >>/workspace/.env
 #   ],
 #   "tenant_permissions": []
 # }' --insecure
-# echo "Creating portscan user..."
+# # echo "Creating portscan user..."
 # OS_AUTH_TOKEN=$(curl -X POST "http://opensearch:9200/_plugins/_security/api/internalusers/portscan" -H "Content-Type: application/json" -u "admin:$OS_ADMIN_PASSWORD" -d'
 # {
 #   "password": "'"$OS_PASSWORD"'",
@@ -61,7 +62,7 @@ echo "export OS_USER=\"portscan\"" >>/workspace/.env
 # }' --insecure | jq -r '.auth.token')
 # echo "export OS_AUTH_TOKEN=\"$OS_AUTH_TOKEN\"" >>/workspace/.env
 
-chown -R www-data:www-data /workspace/src
+# chown -R www-data:www-data /workspace/src
 
 cd /workspace/src
 source /workspace/.env
